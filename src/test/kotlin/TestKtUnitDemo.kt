@@ -7,4 +7,9 @@ internal class TestKtUnitDemo {
     fun testSum() {
         assertEquals(1, 1)
     }
+
+    @Test
+    fun testSum1() {
+        assertEquals(1, 2)
+    }
 }
