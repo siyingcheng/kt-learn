@@ -25,6 +25,24 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
 
+      - name: Cache Gradle Cache
+        if: github.event_name == 'push' || github.event_name == 'pull_request'
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-cache${{ hashFiles('**/*.gradle') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-cache
+
+      - name: Cache Gradle Wrapper
+        if: github.event_name == 'push' || github.event_name == 'pull_request'
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-wrapper${{ hashFiles('**/*.gradle') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-wrapper
+
       # Setup JDK
       - uses: actions/setup-java@v3
         with:
@@ -34,12 +52,12 @@ jobs:
       # Setup Kotlin
       #      - uses: fwilhe2/setup-kotlin@main
 
-#      - name: Validate Gradle wrapper
-#        uses: gradle/wrapper-validation-action@e6e38bacfdf1a337459f332974bb2327a31aaf4b
-#
-#      - name: Run the Gradle package task
-#        uses: gradle/gradle-build-action@937999e9cc2425eddc7fd62d1053baf041147db7
-#
+      #      - name: Validate Gradle wrapper
+      #        uses: gradle/wrapper-validation-action@e6e38bacfdf1a337459f332974bb2327a31aaf4b
+      #
+      #      - name: Run the Gradle package task
+      #        uses: gradle/gradle-build-action@937999e9cc2425eddc7fd62d1053baf041147db7
+      #
       - name: Grant Permissions to gradlew
         run: chmod +x gradlew
 
