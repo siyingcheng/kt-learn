@@ -56,7 +56,6 @@ internal class TestClass {
         assertEquals("3 idiots", simon.favoriteGame)
     }
 
-
     @Test
     @DisplayName("Verify field can override by get() and set()")
     fun verifyFieldCanOverrideByGetAndSet() {
@@ -67,6 +66,24 @@ internal class TestClass {
         // override set(...)
         simon.firstName = "Simon"
         assertEquals("Fist Name: SIMON", simon.firstName)
+    }
+
+    @Test
+    @DisplayName("Verify the object create by lazy initializing should not start before the object has been use")
+    fun verifyTheObjectCreateByLazyInitializingShouldNotStartBeforeTheObjectHasBeenUse() {
+        Student.resetInitTimes()
+
+        // Initializing start when a regular object creating
+        Student("Amy", "Cao", 20)
+        assertEquals(1, Student.initTimes)
+
+        val simon: Student by lazy {
+            Student("Simon", "Si", 20)
+        }
+        // The object `simon` create by lazy, so it's not initializing yet
+        assertEquals(1, Student.initTimes)
+        simon.favoriteGame = "3 idiots" // The object will initialize before use
+        assertEquals(2, Student.initTimes)
     }
 
     private class UserInfo(firstName: String, lastName: String, age: Int = 0) {
@@ -81,6 +98,18 @@ internal class TestClass {
 
     private class Student(var firstName: String, var lastName: String, var age: Int = 0) {
         lateinit var favoriteGame: String
+
+        companion object {
+            var initTimes: Int = 0
+
+            fun resetInitTimes() {
+                initTimes = 0
+            }
+        }
+
+        init {
+            initTimes++
+        }
     }
 
     private class User(name: String, age: Int) {
